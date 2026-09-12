@@ -25,7 +25,7 @@ func generateID() string {
 	return string(b)
 }
 
-func shortUrlHandler(res http.ResponseWriter, req *http.Request) {
+func shortURLHandler(res http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
 		http.Error(res, "method not allowed", http.StatusBadRequest)
 		return
@@ -56,7 +56,7 @@ func shortUrlHandler(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte(shortURL))
 }
 
-func fullUrlHandler(res http.ResponseWriter, req *http.Request) {
+func fullURLHandler(res http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		http.Error(res, "method not allowed", http.StatusBadRequest)
 		return
@@ -83,8 +83,8 @@ func fullUrlHandler(res http.ResponseWriter, req *http.Request) {
 
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc(`/`, shortUrlHandler)
-	mux.HandleFunc(`/{id}`, fullUrlHandler)
+	mux.HandleFunc(`/`, shortURLHandler)
+	mux.HandleFunc(`/{id}`, fullURLHandler)
 
 	err := http.ListenAndServe(`:8080`, mux)
 	if err != nil {
