@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func Test_fullURLHandler(t *testing.T) {
+func TestFullURLHandler(t *testing.T) {
 	const (
 		existingID  = "EwHXdJfB"
 		originalURL = "https://practicum.yandex.ru/"
@@ -79,7 +79,7 @@ func Test_fullURLHandler(t *testing.T) {
 	}
 }
 
-func Test_shortURLHandler(t *testing.T) {
+func TestShortURLHandler(t *testing.T) {
 	type want struct {
 		code        int
 		contentType string
