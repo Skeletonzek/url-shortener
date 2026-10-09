@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"net/http"
 	"sync"
+
+	"github.com/go-chi/chi/v5"
 )
 
 const (
@@ -26,11 +28,6 @@ func generateID() string {
 }
 
 func shortURLHandler(res http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPost {
-		http.Error(res, "method not allowed", http.StatusBadRequest)
-		return
-	}
-
 	body, err := io.ReadAll(req.Body)
 	if err != nil || len(body) == 0 {
 		http.Error(res, "url is required", http.StatusBadRequest)
@@ -57,12 +54,7 @@ func shortURLHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 func fullURLHandler(res http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodGet {
-		http.Error(res, "method not allowed", http.StatusBadRequest)
-		return
-	}
-
-	id := req.PathValue("id")
+	id := chi.URLParam(req, "id")
 	if id == "" {
 		http.Error(res, "id is required", http.StatusBadRequest)
 		return
@@ -81,12 +73,21 @@ func fullURLHandler(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(http.StatusTemporaryRedirect)
 }
 
-func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc(`/`, shortURLHandler)
-	mux.HandleFunc(`/{id}`, fullURLHandler)
+func badRequestHandler(res http.ResponseWriter, req *http.Request) {
+	http.Error(res, "bad request", http.StatusBadRequest)
+}
 
-	err := http.ListenAndServe(`:8080`, mux)
+func newRouter() chi.Router {
+	r := chi.NewRouter()
+	r.Post(`/`, shortURLHandler)
+	r.Get(`/{id}`, fullURLHandler)
+	r.NotFound(badRequestHandler)
+	r.MethodNotAllowed(badRequestHandler)
+	return r
+}
+
+func main() {
+	err := http.ListenAndServe(`:8080`, newRouter())
 	if err != nil {
 		panic(err)
 	}

@@ -61,10 +61,9 @@ func TestFullURLHandler(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			req := httptest.NewRequest(tt.method, "/"+tt.id, nil)
-			req.SetPathValue("id", tt.id)
 			rec := httptest.NewRecorder()
 
-			fullURLHandler(rec, req)
+			newRouter().ServeHTTP(rec, req)
 
 			res := rec.Result()
 			defer res.Body.Close()
@@ -120,7 +119,7 @@ func TestShortURLHandler(t *testing.T) {
 			req := httptest.NewRequest(tt.method, "/", strings.NewReader(tt.body))
 			rec := httptest.NewRecorder()
 
-			shortURLHandler(rec, req)
+			newRouter().ServeHTTP(rec, req)
 
 			res := rec.Result()
 			defer res.Body.Close()
